@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Podcast = require('../models/Podcast');
+const auth = require('../middleware/auth');
 
 // Get all podcasts (No role restriction)
-router.get('/', async (req, res) => {
+router.get('/', auth(["admin"]), async (req, res) => {
   try {
     const podcasts = await Podcast.find({}, { __v: 0, createdAt: 0 });
     res.json(podcasts);
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new podcast (No role restriction)
-router.post('/', async (req, res) => {
+router.post('/', auth(["admin"]), async (req, res) => {
   const { title, description, url, episodes } = req.body;
   try {
     const podcast = new Podcast({
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get podcast by ID (No role restriction)
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth(["admin"]), async (req, res) => {
   try {
     const podcast = await Podcast.findById(req.params.id, { __v: 0 });
     if (!podcast) {
@@ -47,7 +48,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update podcast (No role restriction)
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth(["admin"]), async (req, res) => {
   try {
     const updates = {};
     if (req.body.title) updates.title = req.body.title;
@@ -75,7 +76,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete podcast (No role restriction)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth(["admin"]), async (req, res) => {
   try {
     const podcast = await Podcast.findByIdAndDelete(req.params.id);
     if (!podcast) {
